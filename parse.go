@@ -125,11 +125,6 @@ func (list StringMaybeList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(list)
 }
 
-func (list *SchemaMaybeList) MarshalJSON() ([]byte, error) { return []byte{}, nil }
-func (list *SchemaMaybeList) UnmarshalJSON([]byte) error   { return nil }
-func (list *SchemaMaybeList) MarshalBSON() ([]byte, error) { return []byte{}, nil }
-func (list *SchemaMaybeList) UnmarshalBSON([]byte) error   { return nil }
-
 func (list *SchemaListOrBoolean) MarshalJSON() ([]byte, error) { return []byte{}, nil }
 func (list *SchemaListOrBoolean) UnmarshalJSON([]byte) error   { return nil }
 func (list *SchemaListOrBoolean) MarshalBSON() ([]byte, error) { return []byte{}, nil }
@@ -183,7 +178,51 @@ func (list *StringMaybeList) UnmarshalBSON(data []byte) error {
 	return nil
 }
 
+func (list SchemaMaybeList) MarshalJSON() ([]byte, error) {
+	if len(list) < 2 {
+		return json.Marshal(list[0])
+	}
+	return json.Marshal([]Schema(list))
+}
 
+func (list *SchemaMaybeList) UnmarshalJSON(data []byte) error {
+	if len(data) > 0 && data[0] == '"' {
+		var schema Schema
+		if err := json.Unmarshal(data, &schema); err != nil {
+			return err
+		}
+		(*list) = append((*list), schema)
+	} else {
+		var schemaList []Schema
+		if err := json.Unmarshal(data, &schemaList); err != nil {
+			return err
+		}
+		(*list) = SchemaMaybeList(schemaList)
+	}
+	return nil
+}
+func (list SchemaMaybeList) MarshalBSON() ([]byte, error) {
+	if len(list) < 2 {
+		return bson.Marshal(list[0])
+	}
+	return bson.Marshal([]Schema(list))
+}
+func (list *SchemaMaybeList) UnmarshalBSON(data []byte) error {
+	if len(data) > 0 && data[0] == '"' {
+		var schema Schema
+		if err := bson.Unmarshal(data, &schema); err != nil {
+			return err
+		}
+		(*list) = append((*list), schema)
+	} else {
+		var schemaList []Schema
+		if err := bson.Unmarshal(data, &schemaList); err != nil {
+			return err
+		}
+		(*list) = SchemaMaybeList(schemaList)
+	}
+	return nil
+}
 
 title	// N/A	string	A descriptive title string with no effect.
 description	// N/A	string	A string that describes the schema and has no effect.
