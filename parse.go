@@ -43,7 +43,7 @@ type (
 
 		// Field must not match the schema
 		// a JSON Schema object
-		Not *Schema `json:"allOf,omitempty" bson:"allOf,omitempty"`
+		Not *Schema `json:"not,omitempty" bson:"not,omitempty"`
 
 		// Numbers
 

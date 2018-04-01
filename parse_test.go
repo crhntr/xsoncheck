@@ -2,51 +2,49 @@ package xsonschema_test
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/crhntr/xsonschema"
+	"github.com/globalsign/mgo/bson"
 )
 
 func Test(t *testing.T) {
-	var schema xsonschema.Schema
-	if err := json.Unmarshal([]byte(`{
-    "bsonType": "object",
-    "required": [ "name", "year", "major", "gpa" ],
-    "properties": {
-      "name": {
-        "bsonType": "string",
-        "description": "must be a string and is required"
-      },
-      "gender": {
-        "bsonType": "string",
-        "description": "must be a string and is not required"
-      },
-      "year": {
-        "bsonType": "int",
-        "minimum": 2017,
-        "maximum": 3017,
-        "exclusiveMaximum": false,
-        "description": "must be an integer in [ 2017, 3017 ] and is required"
-      },
-      "major": {
-        "enum": [ "Math", "English", "Computer Science", "History", null ],
-        "description": "can only be one of the enum values and is required"
-      },
-      "gpa": {
-        "bsonType": [ "double" ],
-        "minimum": 0,
-        "description": "must be a double and is required"
-      }
-    }
-  }`), &schema); err != nil {
-		t.Fatal(err)
+
+	tests := map[string]bool{
+		"testdata/schema_00.json": false,
+		"testdata/schema_01.json": true,
+		"testdata/schema_02.json": true,
 	}
 
-	if EqualSlices(schema.BSONType, "object") ||
-		EqualSlices(schema.Required, "name", "year", "major", "gpa") {
-		t.Fail()
-	}
+	for testFileName, shouldErr := range tests {
+		t.Run(testFileName, func(t *testing.T) {
+			f, err := os.Open(testFileName)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var schema xsonschema.Schema
+			if err := json.NewDecoder(f).Decode(&schema); !shouldErr && err != nil {
+				t.Error(err)
+			} else if shouldErr && err == nil {
+				t.Error("err should have occured")
+			}
 
+			if !t.Failed() {
+				buf, err := bson.Marshal(schema)
+				if err != nil {
+					t.Error(err)
+				}
+
+				var schema xsonschema.Schema
+				err = bson.Unmarshal(buf, &schema)
+				if err != nil {
+					t.Error(err)
+				}
+			}
+
+		})
+	}
 }
 
 func EqualSlices(strs1 []string, strs2 ...string) bool {
@@ -61,7 +59,3 @@ func EqualSlices(strs1 []string, strs2 ...string) bool {
 
 	return true
 }
-
-/*
-
- */
