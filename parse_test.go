@@ -41,6 +41,25 @@ func Test(t *testing.T) {
   }`), &schema); err != nil {
 		t.Fatal(err)
 	}
+
+	if EqualSlices(schema.BSONType, "object") ||
+		EqualSlices(schema.Required, "name", "year", "major", "gpa") {
+		t.Fail()
+	}
+
+}
+
+func EqualSlices(strs1 []string, strs2 ...string) bool {
+	if len(strs1) != len(strs2) {
+		return false
+	}
+	for i, str := range strs1 {
+		if str == strs2[i] {
+			return false
+		}
+	}
+
+	return true
 }
 
 /*

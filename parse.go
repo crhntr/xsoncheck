@@ -131,16 +131,6 @@ func (list StringMaybeList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(list)
 }
 
-
-// StringMaybeList
-// SchemaMaybeList
-// SchemaListOrBoolean
-// func () MarshalJSON() ([]byte, error){return []byte{}, nil }
-// func () UnmarshalJSON([]byte) error{return nil }
-// func () MarshalBSONDocument() (*Document, error) {return nil, nil }
-// func () UnmarshalBSONDocument(*Document) error {return nil }
-/*
-
 func (list *StringMaybeList) UnmarshalJSON(data []byte) error {
 	if len(data) > 0 && data[0] == '"' {
 		var str string
@@ -252,6 +242,7 @@ func (list *SchemaListOrBoolean) UnmarshalBSON(data []byte) error {
 	}
 }
 
-title	// N/A	string	A descriptive title string with no effect.
-description	// N/A	string	A string that describes the schema and has no effect.
-*/
+// func () MarshalJSON() ([]byte, error){ return []byte{}, nil }
+// func () UnmarshalJSON([]byte) error{ return nil }
+// func () MarshalBSON() ([]byte, error){ return []byte{}, nil }
+// func () UnmarshalBSON([]byte) error{ return nil }
