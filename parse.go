@@ -3,6 +3,8 @@ package xsonschema
 type (
 	Object struct{}
 
+	StringMaybeList []string
+
 	SchemaMaybeList []Schema
 
 	SchemaListOrBoolean struct {
@@ -15,11 +17,11 @@ type (
 
 		// Accepts same string aliases used for the $type operator
 		// string alias or array of string aliases
-		BSONType []string `json:"bsonType,omitempty" bson:"bsonType,omitempty"`
+		BSONType StringMaybeList `json:"bsonType,omitempty" bson:"bsonType,omitempty"`
 
 		// Enumerates the possible JSON types of the field. Available types are “object”, “array”, “number”, “boolean”, “string”, and “null”.
 		// string or array of unique strings
-		Type []string `json:"type,omitempty" bson:"type,omitempty"`
+		Type StringMaybeList `json:"type,omitempty" bson:"type,omitempty"`
 
 		// Enumerates all possible values of the field
 		Enum []interface{} `json:"enum,omitempty" bson:"enum,omitempty"`
@@ -40,19 +42,19 @@ type (
 		// Numbers
 
 		// Field must be a multiple of this value
-		MultipleOf float64
+		MultipleOf float64 `json:"multipleOf,omitempty" bson:"multipleOf,omitempty"`
 
 		// Indicates the maximum value of the field
-		Maximum float64
+		Maximum float64 `json:"maximum,omitempty" bson:"maximum,omitempty"`
 
 		// If true and field is a number, maximum is an exclusive maximum. Otherwise, it is an inclusive maximum.
-		ExclusiveMaximum bool
+		ExclusiveMaximum bool `json:"exclusiveMaximum,omitempty" bson:"exclusiveMaximum,omitempty"`
 
 		// Indicates the minimum value of the field
-		Minimum float64
+		Minimum float64 `json:"minimum,omitempty" bson:"minimum,omitempty"`
 
 		// If true, minimum is an exclusive minimum. Otherwise, it is an inclusive minimum.
-		ExclusiveMinimum bool
+		ExclusiveMinimum bool `json:"exclusiveMinimum,omitempty" bson:"exclusiveMinimum,omitempty"`
 
 		// Array
 
@@ -63,11 +65,9 @@ type (
 		MinItems int `json:"minItems,omitempty" bson:"minItems,omitempty"`
 
 		// If true, each item in the array must be unique. Otherwise, no uniqueness constraint is enforced.
-		//boolean
 		UniqueItems bool `json:"uniqueItems,omitempty" bson:"uniqueItems,omitempty"`
 
 		// If an object, must be a valid JSON Schema
-		// might be bool
 		AdditionalItems SchemaListOrBoolean `json:"additionalItems,omitempty" bson:"additionalItems,omitempty"`
 
 		// Must be either a valid JSON Schema, or an array of valid JSON Schemas
@@ -118,6 +118,28 @@ func Parse(schema Schema, data []byte) (Object, error) {
 	return Object{}, nil
 }
 
+func (list *StringMaybeList) MarshalJSON() ([]byte, error) { return []byte{}, nil }
+func (list *StringMaybeList) UnmarshalJSON([]byte) error   { return nil }
+func (list *StringMaybeList) MarshalBSON() ([]byte, error) { return []byte{}, nil }
+func (list *StringMaybeList) UnmarshalBSON([]byte) error   { return nil }
+
+func (list *SchemaMaybeList) MarshalJSON() ([]byte, error) { return []byte{}, nil }
+func (list *SchemaMaybeList) UnmarshalJSON([]byte) error   { return nil }
+func (list *SchemaMaybeList) MarshalBSON() ([]byte, error) { return []byte{}, nil }
+func (list *SchemaMaybeList) UnmarshalBSON([]byte) error   { return nil }
+
+func (list *SchemaListOrBoolean) MarshalJSON() ([]byte, error) { return []byte{}, nil }
+func (list *SchemaListOrBoolean) UnmarshalJSON([]byte) error   { return nil }
+func (list *SchemaListOrBoolean) MarshalBSON() ([]byte, error) { return []byte{}, nil }
+func (list *SchemaListOrBoolean) UnmarshalBSON([]byte) error   { return nil }
+
+// StringMaybeList
+// SchemaMaybeList
+// SchemaListOrBoolean
+// func () MarshalJSON() ([]byte, error){return []byte{}, nil }
+// func () UnmarshalJSON([]byte) error{return nil }
+// func () MarshalBSONDocument() (*Document, error) {return nil, nil }
+// func () UnmarshalBSONDocument(*Document) error {return nil }
 /*
 
 
