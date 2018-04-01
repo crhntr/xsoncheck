@@ -118,10 +118,12 @@ func Parse(schema Schema, data []byte) (Object, error) {
 	return Object{}, nil
 }
 
-func (list *StringMaybeList) MarshalJSON() ([]byte, error) { return []byte{}, nil }
-func (list *StringMaybeList) UnmarshalJSON([]byte) error   { return nil }
-func (list *StringMaybeList) MarshalBSON() ([]byte, error) { return []byte{}, nil }
-func (list *StringMaybeList) UnmarshalBSON([]byte) error   { return nil }
+func (list StringMaybeList) MarshalJSON() ([]byte, error) {
+	if len(list) < 2 {
+		return json.Marshal(list[0])
+	}
+	return json.Marshal(list)
+}
 
 func (list *SchemaMaybeList) MarshalJSON() ([]byte, error) { return []byte{}, nil }
 func (list *SchemaMaybeList) UnmarshalJSON([]byte) error   { return nil }
@@ -142,6 +144,44 @@ func (list *SchemaListOrBoolean) UnmarshalBSON([]byte) error   { return nil }
 // func () UnmarshalBSONDocument(*Document) error {return nil }
 /*
 
+func (list *StringMaybeList) UnmarshalJSON(data []byte) error {
+	if len(data) > 0 && data[0] == '"' {
+		var str string
+		if err := json.Unmarshal(data, &str); err != nil {
+			return err
+		}
+		(*list) = append((*list), str)
+	} else {
+		var strs []string
+		if err := json.Unmarshal(data, &strs); err != nil {
+			return err
+		}
+		(*list) = StringMaybeList(strs)
+	}
+	return nil
+}
+func (list StringMaybeList) MarshalBSON() ([]byte, error) {
+	if len(list) < 2 {
+		return bson.Marshal(list[0])
+	}
+	return bson.Marshal(list)
+}
+func (list *StringMaybeList) UnmarshalBSON(data []byte) error {
+	if len(data) > 0 && data[0] == '"' {
+		var str string
+		if err := bson.Unmarshal(data, &str); err != nil {
+			return err
+		}
+		(*list) = append((*list), str)
+	} else {
+		var strs []string
+		if err := bson.Unmarshal(data, &strs); err != nil {
+			return err
+		}
+		(*list) = StringMaybeList(strs)
+	}
+	return nil
+}
 
 
 
