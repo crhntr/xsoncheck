@@ -101,8 +101,7 @@ type (
 		AdditionalProperties SchemaListOrBoolean `json:"additionalProperties,omitempty" bson:"additionalProperties,omitempty"`
 
 		// A valid JSON Schema where each value is also a valid JSON Schema object
-		// objects	object
-		Properties *Schema `json:"properties,omitempty" bson:"properties,omitempty"`
+		Properties map[string]Schema `json:"properties,omitempty" bson:"properties,omitempty"`
 
 		// In addition to properties requirements, each property name of this object must be a valid regular expression
 		// objects	object
@@ -114,7 +113,7 @@ type (
 	}
 )
 
-func Parse(data []byte) (Object, error) {
+func Parse(schema Schema, data []byte) (Object, error) {
 
 	return Object{}, nil
 }
