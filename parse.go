@@ -1,5 +1,11 @@
 package xsonschema
 
+import (
+	"encoding/json"
+
+	"github.com/globalsign/mgo/bson"
+)
+
 type (
 	Object struct{}
 
@@ -8,7 +14,7 @@ type (
 	SchemaMaybeList []Schema
 
 	SchemaListOrBoolean struct {
-		Schema  SchemaMaybeList
+		Schemas SchemaMaybeList
 		Boolean bool
 	}
 
@@ -125,10 +131,6 @@ func (list StringMaybeList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(list)
 }
 
-func (list *SchemaListOrBoolean) MarshalJSON() ([]byte, error) { return []byte{}, nil }
-func (list *SchemaListOrBoolean) UnmarshalJSON([]byte) error   { return nil }
-func (list *SchemaListOrBoolean) MarshalBSON() ([]byte, error) { return []byte{}, nil }
-func (list *SchemaListOrBoolean) UnmarshalBSON([]byte) error   { return nil }
 
 // StringMaybeList
 // SchemaMaybeList
@@ -222,6 +224,32 @@ func (list *SchemaMaybeList) UnmarshalBSON(data []byte) error {
 		(*list) = SchemaMaybeList(schemaList)
 	}
 	return nil
+}
+func (item SchemaListOrBoolean) MarshalJSON() ([]byte, error) {
+	if len(item.Schemas) == 0 {
+		return json.Marshal(item.Boolean)
+	}
+	return json.Marshal(item.Schemas)
+}
+func (list *SchemaListOrBoolean) UnmarshalJSON(data []byte) error {
+	if data[0] == '[' || data[0] == '{' {
+		return json.Unmarshal(data, &list.Schemas)
+	} else {
+		return json.Unmarshal(data, &list.Boolean)
+	}
+}
+func (item SchemaListOrBoolean) MarshalBSON() ([]byte, error) {
+	if len(item.Schemas) == 0 {
+		return bson.Marshal(item.Boolean)
+	}
+	return bson.Marshal(item.Schemas)
+}
+func (list *SchemaListOrBoolean) UnmarshalBSON(data []byte) error {
+	if data[0] == '[' || data[0] == '{' {
+		return bson.Unmarshal(data, &list.Schemas)
+	} else {
+		return bson.Unmarshal(data, &list.Boolean)
+	}
 }
 
 title	// N/A	string	A descriptive title string with no effect.
