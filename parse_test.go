@@ -1,11 +1,11 @@
-package xsonschema_test
+package xsoncheck_test
 
 import (
 	"encoding/json"
 	"os"
 	"testing"
 
-	"github.com/crhntr/xsonschema"
+	"github.com/crhntr/xsoncheck"
 	"github.com/globalsign/mgo/bson"
 )
 
@@ -23,7 +23,7 @@ func Test(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			var schema xsonschema.Schema
+			var schema xsoncheck.Schema
 			if err := json.NewDecoder(f).Decode(&schema); !shouldErr && err != nil {
 				t.Error(err)
 			} else if shouldErr && err == nil {
@@ -36,7 +36,7 @@ func Test(t *testing.T) {
 					t.Error(err)
 				}
 
-				var schema xsonschema.Schema
+				var schema xsoncheck.Schema
 				err = bson.Unmarshal(buf, &schema)
 				if err != nil {
 					t.Error(err)

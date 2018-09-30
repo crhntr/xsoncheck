@@ -1,4 +1,4 @@
-package xsonschema
+package xsoncheck
 
 import (
 	"encoding/json"
